@@ -2,18 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans;
+    overflow-x: hidden;
+  }
+
+  /* Ensure no horizontal scroll on any device */
+  img, svg, video {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
-body {
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+@layer components {
+  .section-title {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight;
+  }
+
+  .section-container {
+    @apply max-w-6xl mx-auto;
+  }
+
+  .card-dark {
+    @apply border border-gray-800 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-gray-600;
+  }
+
+  .card-light {
+    @apply border border-gray-200 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-gray-400 hover:shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-block rounded-lg px-6 py-3 font-semibold transition duration-200;
+  }
+
+  .btn-primary-dark {
+    @apply btn-primary bg-white text-black hover:bg-gray-200;
+  }
+
+  .btn-secondary-dark {
+    @apply btn-primary border border-gray-600 text-white hover:bg-gray-900;
+  }
+
+  .btn-secondary-light {
+    @apply btn-primary border border-gray-400 text-black hover:bg-gray-100;
+  }
 }
 
-code,
-kbd,
-.mono {
-  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SFMono-Regular',
-    Consolas, monospace;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
 }
