@@ -2,45 +2,34 @@
 import { scenarios } from '../data/scenarios';
 ---
 
-<section class="px-6 pt-8 pb-20 sm:pt-10 sm:pb-24 bg-black text-white">
-  <div class="max-w-7xl mx-auto">
+<section class="px-6 md:px-8 lg:px-12 min-h-[100dvh] flex flex-col justify-start md:justify-center bg-black text-white">
+  <div class="max-w-7xl mx-auto w-full pt-[calc(3.5rem+0.75rem)] pb-4 sm:pt-[calc(3.5rem+1.5rem)] sm:pb-6 lg:pt-[calc(3.5rem+2rem)] lg:pb-8">
 
-    <!-- brand mark, top-left -->
-    <a href="/" class="inline-flex items-center gap-3 mb-12 sm:mb-16">
-      <img
-        src="/brand/blackpurrl-logo-mark-v1.png"
-        alt="BlackPurrl"
-        class="w-12 h-12 sm:w-14 sm:h-14"
-        width="56" height="56" loading="eager"
-      />
-      <span class="text-lg sm:text-xl font-semibold tracking-tight">BlackPurrl</span>
-    </a>
-
-    <div class="lg:flex lg:items-center lg:gap-12">
+    <div class="md:flex md:items-center md:gap-8 lg:gap-12">
 
     <!-- left column -->
-    <div class="lg:w-2/5 lg:text-left text-center flex flex-col">
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+    <div class="md:w-2/5 md:text-left text-center flex flex-col">
+      <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
         <span class="text-white">Your companion through</span><br>
         <!-- rotating lines -->
-        <button data-tab="0" class="hero-tab block w-full lg:text-left text-center mt-1 cursor-pointer bg-transparent border-0 p-0">
+        <button data-tab="0" class="hero-tab block w-full md:text-left text-center mt-1 cursor-pointer bg-transparent border-0 p-0">
           <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every quest,</span>
         </button>
-        <button data-tab="1" class="hero-tab block w-full lg:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+        <button data-tab="1" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
           <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every world,</span>
         </button>
-        <button data-tab="2" class="hero-tab block w-full lg:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+        <button data-tab="2" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
           <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every moment.</span>
         </button>
       </h1>
 
-      <p class="mt-6 text-base sm:text-lg text-ink-200 max-w-2xl text-pretty leading-relaxed">
+      <p class="mt-6 text-base sm:text-lg text-ink-200 max-w-2xl text-pretty leading-relaxed hidden md:block">
         BlackPurrl is your AI companion for the games you play. Ask anything — it answers from where you are, right now.
       </p>
     </div>
 
     <!-- right column: real-time voice-interaction "promo clip" -->
-    <div class="mt-16 sm:mt-20 lg:mt-0 lg:w-3/5">
+    <div class="mt-3 md:mt-0 md:w-3/5">
       <div class="hero-clip-frame">
         <!-- A. scene layer: clean 16:9 game picture (avatar/voice/mute only) -->
         <div class="hero-clip-stage">
@@ -50,18 +39,17 @@ import { scenarios } from '../data/scenarios';
               class="hero-clip-scene"
               style={`--scene-hue: ${250 - i * 40}deg; ${i === 0 ? 'opacity: 1;' : 'opacity: 0; pointer-events: none;'}`}
             >
-              <!-- scene background — swap this single element for <img>/<video> later -->
-              <div class="hero-clip-bg" data-bg aria-hidden="true"></div>
+              <!-- scene background -->
+              <video
+                class="hero-clip-bg"
+                src={`/video/scene-${i}.mp4`}
+                autoplay
+                loop
+                muted
+                playsinline
+                aria-hidden="true"
+              />
               <div class="hero-clip-scrim" aria-hidden="true"></div>
-
-              <!-- game_state chip -->
-              <div class="hero-clip-state state-block">
-                <span class="state-label">game_state</span>
-                <div class="state-line whitespace-pre leading-relaxed">{scenario.stateLines.map(line => <div>{line}</div>)}</div>
-              </div>
-
-              <!-- in-game story subtitle (game's own caption) lives over the picture -->
-              <div class="hero-clip-story" data-story data-story-text={scenario.storyLine}></div>
 
               <!-- virtual avatar (placeholder mascot) + voice bars + mute -->
               <div class="hero-clip-avatar">
@@ -89,22 +77,34 @@ import { scenarios } from '../data/scenarios';
               data-track={i}
               data-question={scenario.question}
               data-toolcall={scenario.toolCall}
+              data-statelabel={scenario.stateLabel}
+              data-statepills={scenario.statePills.join('|')}
               data-answer={scenario.answer}
-              class="hero-clip-lines"
-              style={i === 0 ? 'opacity: 1;' : 'opacity: 0; pointer-events: none;'}
+              class={`hero-clip-lines${i === 0 ? ' is-active' : ''}`}
             >
               <p class="clip-line clip-line-you" data-you-line>
                 <span class="clip-speaker">You</span>
                 <span class="clip-text" data-you></span>
               </p>
-              <p class="clip-line clip-line-tool" data-tool-line>
-                <span class="clip-speaker clip-speaker-tool">tool call</span>
-                <span class="clip-text clip-text-tool" data-tool></span>
-              </p>
-              <p class="clip-line clip-line-ai" data-ai-line>
-                <span class="clip-speaker clip-speaker-ai">BlackPurrl</span>
-                <span class="clip-text" data-ai></span>
-              </p>
+              <div class="clip-line clip-line-bp" data-bp-line>
+                <span class="clip-speaker clip-speaker-ai">Companion</span>
+                <span class="clip-bp-body">
+                  <span class="clip-bp-thinking" data-tool>
+                    <span class="clip-bp-tag">thinking</span>
+                    <span class="clip-text clip-text-tool" data-tool-text></span>
+                  </span>
+                  <span class="clip-bp-state" data-state>
+                    <span class="clip-bp-tag" data-state-label></span>
+                    <span class="clip-state-pills" data-state-text></span>
+                  </span>
+                  <span class="clip-bp-voice" data-ai>
+                    <span class="clip-bp-tag clip-voice-bars-wrap" aria-hidden="true">
+                      <span class="clip-voice-bars"><span></span><span></span><span></span></span>
+                    </span>
+                    <span class="clip-text" data-ai-text></span>
+                  </span>
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -116,7 +116,12 @@ import { scenarios } from '../data/scenarios';
 </section>
 
 <script>
-  const DURATION = 6000;
+  const TOOL_AT_CONST  = 500;
+  const STATE_AT_CONST = 1200;
+  const SPEAK_AT_CONST = 2000;
+  const TYPE_BUDGET_CONST = 4000;
+  const READ_PAUSE_CONST  = 2000;
+  const DURATION = SPEAK_AT_CONST + TYPE_BUDGET_CONST + READ_PAUSE_CONST; // 8000
 
   const tabs = Array.from(document.querySelectorAll<HTMLElement>('.hero-tab'));
   const scenes = Array.from(document.querySelectorAll<HTMLElement>('.hero-clip-scene'));
@@ -142,12 +147,12 @@ import { scenarios } from '../data/scenarios';
       scene.style.pointerEvents = i === index ? 'auto' : 'none';
     });
     tracks.forEach((track, i) => {
-      track.style.opacity = i === index ? '1' : '0';
-      track.style.pointerEvents = i === index ? 'auto' : 'none';
+      track.classList.toggle('is-active', i === index);
     });
     spans.forEach((span, i) => {
       if (i !== index) resetSpan(span);
     });
+    tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
   }
 
   function animateFill(spanIndex: number) {
@@ -175,18 +180,19 @@ import { scenarios } from '../data/scenarios';
     captionTimers = [];
   }
 
-  function typewriter(el: HTMLElement, text: string, perChar: number, onDone?: () => void) {
+  function typewriter(el: HTMLElement, text: string, perWord: number, onDone?: () => void) {
     if (reduceMotion) {
       el.textContent = text;
       onDone?.();
       return;
     }
+    const words = text.split(' ');
     let i = 0;
     function tick() {
-      el.textContent = text.slice(0, i);
-      if (i < text.length) {
+      el.textContent = words.slice(0, i).join(' ');
+      if (i < words.length) {
         i += 1;
-        captionTimers.push(setTimeout(tick, perChar));
+        captionTimers.push(setTimeout(tick, perWord));
       } else {
         onDone?.();
       }
@@ -198,69 +204,89 @@ import { scenarios } from '../data/scenarios';
     clearCaptionTimers();
     const scene = scenes[index];
     const track = tracks[index];
-    const story = scene.querySelector<HTMLElement>('[data-story]');
-    const youText = track.querySelector<HTMLElement>('[data-you]');
-    const toolText = track.querySelector<HTMLElement>('[data-tool]');
-    const aiText = track.querySelector<HTMLElement>('[data-ai]');
-    if (!youText || !toolText || !aiText) return;
+    const youText  = track.querySelector<HTMLElement>('[data-you]');
+    const toolText = track.querySelector<HTMLElement>('[data-tool-text]');
+    const stateText = track.querySelector<HTMLElement>('[data-state-text]');
+    const aiText   = track.querySelector<HTMLElement>('[data-ai-text]');
+    if (!youText || !toolText || !stateText || !aiText) return;
 
-    const question = track.dataset.question ?? '';
-    const toolCall = track.dataset.toolcall ?? '';
-    const answer = track.dataset.answer ?? '';
+    const question   = track.dataset.question ?? '';
+    const toolCall   = track.dataset.toolcall ?? '';
+    const stateLabel = track.dataset.statelabel ?? 'game state';
+    const statePills = (track.dataset.statepills ?? '').split('|').filter(Boolean);
+    const answer     = track.dataset.answer ?? '';
+    const stateLabelEl = track.querySelector<HTMLElement>('[data-state-label]');
 
-    // reset all scenes' speaking + story, and every track's lines
+    // reset
     scenes.forEach((s) => {
       s.classList.remove('is-speaking');
-      const st = s.querySelector<HTMLElement>('[data-story]');
-      if (st) st.textContent = '';
     });
     tracks.forEach((t) => {
-      t.classList.remove('you-active', 'tool-active', 'ai-active', 'is-typing');
-      t.querySelectorAll<HTMLElement>('[data-you], [data-tool], [data-ai]').forEach((el) => (el.textContent = ''));
+      t.classList.remove('you-active', 'bp-thinking', 'bp-state', 'bp-voice', 'is-typing');
+      // keep is-active — that's managed by activateTab
+      t.querySelectorAll<HTMLElement>('[data-you], [data-tool-text], [data-state-text], [data-ai-text]')
+        .forEach((el) => (el.textContent = ''));
     });
 
-    // 0ms — in-game story subtitle + the player's question (both instant)
-    if (story) story.textContent = story.dataset.storyText ?? '';
+    // restart video from frame 0 so video + dialogue stay in sync
+    const video = scene.querySelector<HTMLVideoElement>('video');
+    if (video) { video.currentTime = 0; video.play().catch(() => {}); }
+
+    // 0ms — You question
     track.classList.add('you-active');
     youText.textContent = question;
 
-    // ~1000ms — tool call beat (AI is querying)
-    const TOOL_AT = 1000;
-    const SPEAK_AT = 2000;
-    const TYPE_BUDGET = 3200; // finish typing before the 6s mark
+    const TOOL_AT     = TOOL_AT_CONST;
+    const STATE_AT    = STATE_AT_CONST;
+    const SPEAK_AT    = SPEAK_AT_CONST;
+    const TYPE_BUDGET = TYPE_BUDGET_CONST;
+    const READ_PAUSE  = READ_PAUSE_CONST;
+
+    // step 2 — BlackPurrl thinking
     captionTimers.push(setTimeout(() => {
-      track.classList.add('tool-active');
+      track.classList.add('bp-thinking');
       toolText.textContent = toolCall;
     }, TOOL_AT));
 
-    // ~2000ms — BlackPurrl speaks: voice bars on, typewriter the answer
+    // step 3 — BlackPurrl game state pills
     captionTimers.push(setTimeout(() => {
-      track.classList.add('ai-active', 'is-typing');
+      track.classList.add('bp-state');
+      if (stateLabelEl) stateLabelEl.textContent = stateLabel;
+      stateText.innerHTML = '';
+      statePills.forEach((pill) => {
+        const s = document.createElement('span');
+        s.className = 'state-pill';
+        s.textContent = pill;
+        stateText.appendChild(s);
+      });
+    }, STATE_AT));
+
+    // step 4 — BlackPurrl voice answer
+    captionTimers.push(setTimeout(() => {
+      track.classList.add('bp-voice', 'is-typing');
       scene.classList.add('is-speaking');
-      const perChar = Math.min(TYPE_BUDGET / Math.max(answer.length, 1), 30);
-      typewriter(aiText, answer, perChar, () => {
+      const wordCount = answer.split(' ').length;
+      const perWord = Math.min(TYPE_BUDGET / Math.max(wordCount, 1), 120);
+      typewriter(aiText, answer, perWord, () => {
         track.classList.remove('is-typing');
         scene.classList.remove('is-speaking');
+        if (timer) { clearInterval(timer); clearTimeout(timer as unknown as ReturnType<typeof setTimeout>); }
+        timer = setTimeout(advance, READ_PAUSE) as unknown as ReturnType<typeof setInterval>;
       });
     }, SPEAK_AT));
   }
 
-  // ── shared rotation clock (single source of truth) ─────────────────
-  function goTo(index: number, resetTimer = true) {
+  // ── shared rotation clock — driven by typewriter onDone, not a fixed interval ──
+  function goTo(index: number) {
     current = index;
+    if (timer) { clearInterval(timer); clearTimeout(timer as unknown as ReturnType<typeof setTimeout>); }
     activateTab(index);
     animateFill(index);
     playClip(index);
-    if (resetTimer) {
-      if (timer) clearInterval(timer);
-      timer = setInterval(advance, DURATION);
-    }
   }
 
   function advance() {
-    goTo((current + 1) % tabs.length, false);
-    if (timer) clearInterval(timer);
-    timer = setInterval(advance, DURATION);
+    goTo((current + 1) % tabs.length);
   }
 
   tabs.forEach((tab, i) => {

@@ -89,6 +89,13 @@
     @apply w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center text-sm font-mono;
   }
 
+  /* ── Brand disc: light circle behind the yin-yang logo mark ─────── */
+  .brand-disc {
+    @apply inline-flex items-center justify-center rounded-full flex-shrink-0;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+
   /* ── Hero right-column "promo clip": picture + dialogue track ────── */
 
   /* outer frame: 16:9 picture on top, dialogue track below */
@@ -111,6 +118,9 @@
      replace this <div> with <video class="hero-clip-bg" …>. */
   .hero-clip-bg {
     @apply absolute inset-0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     --scene-hue: 250deg;
     background:
       radial-gradient(120% 80% at 72% 18%, hsl(var(--scene-hue) 70% 60% / 0.18), transparent 60%),
@@ -174,47 +184,108 @@
 
   /* B. dialogue track — all spoken subtitles, BELOW the picture */
   .hero-clip-track {
-    @apply relative mt-4 sm:mt-5;
-    min-height: 7rem;
+    @apply relative mt-2 sm:mt-4;
+    min-height: 4.5rem;
+  }
+  @media (min-width: 640px) {
+    .hero-clip-track { min-height: 7rem; }
   }
   .hero-clip-lines {
-    @apply absolute inset-x-0 top-0 flex flex-col gap-2 transition-opacity duration-500;
+    @apply absolute inset-x-0 top-0 flex-col gap-2;
+    display: none;
+  }
+  .hero-clip-lines.is-active {
+    display: flex;
   }
   .clip-line {
-    @apply flex gap-2.5 text-sm sm:text-base leading-relaxed transition-opacity duration-200;
+    @apply flex gap-2.5 text-xs sm:text-sm lg:text-base leading-relaxed transition-opacity duration-200;
   }
-  /* dim the line whose turn isn't active; hide tool line until active */
-  .hero-clip-lines:not(.you-active) .clip-line-you,
-  .hero-clip-lines:not(.ai-active) .clip-line-ai {
+  /* dim You when not active */
+  .hero-clip-lines:not(.you-active) .clip-line-you {
     @apply opacity-30;
   }
-  .clip-line-tool {
-    @apply opacity-0;
+  /* BlackPurrl row — always visible once bp-thinking starts */
+  .clip-line-bp {
+    @apply opacity-0 transition-opacity duration-300;
   }
-  .hero-clip-lines.tool-active .clip-line-tool {
+  .hero-clip-lines.bp-thinking .clip-line-bp,
+  .hero-clip-lines.bp-state .clip-line-bp,
+  .hero-clip-lines.bp-voice .clip-line-bp {
     @apply opacity-100;
   }
-  /* once the AI is answering, fade the tool-call beat back down */
-  .hero-clip-lines.ai-active .clip-line-tool {
-    @apply opacity-40;
-  }
+  /* speaker label */
   .clip-speaker {
     @apply flex-shrink-0 font-semibold text-ink-400 min-w-[5.5rem];
   }
   .clip-speaker-ai {
     @apply text-violet-400;
   }
-  .clip-speaker-tool {
-    @apply font-mono text-xs uppercase tracking-wider text-ink-500 self-center;
+  /* body: stacks thinking → state → voice vertically */
+  .clip-bp-body {
+    @apply flex flex-col gap-1.5;
+  }
+  /* thinking pill */
+  .clip-bp-thinking {
+    @apply hidden items-center gap-1.5;
+  }
+  .hero-clip-lines.bp-thinking .clip-bp-thinking {
+    @apply flex;
+  }
+  /* state block */
+  .clip-bp-state {
+    @apply hidden items-center gap-1.5;
+  }
+  .hero-clip-lines.bp-state .clip-bp-state {
+    @apply flex;
+  }
+  /* voice answer */
+  .clip-bp-voice {
+    @apply hidden items-center gap-1.5;
+  }
+  .hero-clip-lines.bp-voice .clip-bp-voice {
+    @apply flex;
+  }
+  /* equalizer bars wrapper — same min-width as .clip-bp-tag so all three rows left-align */
+  .clip-voice-bars-wrap {
+    @apply flex items-center justify-start flex-shrink-0 self-start;
+    min-width: 5rem;
+    margin-top: 0.2em;
+  }
+  /* mini equalizer bars */
+  .clip-voice-bars {
+    @apply inline-flex items-end gap-[4px] flex-shrink-0;
+    height: 1.4em;
+  }
+  .clip-voice-bars span {
+    @apply w-[4px] rounded-full bg-violet-400;
+    height: 40%;
+    animation: voiceBar 0.9s ease-in-out infinite;
+  }
+  .clip-voice-bars span:nth-child(2) { animation-delay: 0.15s; }
+  .clip-voice-bars span:nth-child(3) { animation-delay: 0.3s; }
+  .hero-clip-lines:not(.is-typing) .clip-voice-bars span {
+    animation: none;
+    height: 40%;
+  }
+  /* internal tags: "thinking" / "game state" */
+  .clip-bp-tag {
+    @apply font-mono text-[10px] uppercase tracking-wider text-ink-500 flex-shrink-0 mt-0.5;
+    min-width: 5rem;
   }
   .clip-text-tool {
-    @apply font-mono text-xs sm:text-sm text-ink-400 self-center;
+    @apply font-mono text-xs sm:text-sm text-ink-400 italic;
+  }
+  .clip-state-pills {
+    @apply flex flex-wrap gap-1;
+  }
+  .state-pill {
+    @apply font-mono text-[11px] text-ink-300 bg-ink-900 border border-ink-700 rounded px-1.5 py-0.5;
   }
   .clip-text {
     @apply text-white/90;
   }
-  /* blinking caret while the AI line is being typed */
-  .hero-clip-lines.is-typing .clip-line-ai .clip-text::after {
+  /* blinking caret while typing */
+  .hero-clip-lines.is-typing .clip-bp-voice .clip-text::after {
     content: '';
     @apply inline-block w-[2px] h-[1em] align-[-0.1em] ml-0.5 bg-violet-400;
     animation: caretBlink 0.9s step-end infinite;
@@ -240,6 +311,28 @@
     animation: none;
     opacity: 0;
   }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── On-scroll reveal: fade-up entrance for cards below the fold ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* narrow screens (<768px): only show the active hero tab line */
+@media (max-width: 767px) {
+  .hero-tab { display: none; }
+  .hero-tab.is-active { display: block; }
 }
 
 @layer utilities {
