@@ -30,7 +30,7 @@
   }
 
   .section-eyebrow {
-    @apply text-xs sm:text-sm font-semibold tracking-widest uppercase;
+    @apply text-xs sm:text-sm font-semibold tracking-widest uppercase text-ink-500 mb-3;
   }
 
   .section-container {
@@ -74,7 +74,7 @@
   }
 
   .state-line {
-    @apply text-ink-300;
+    @apply text-ink-200;
   }
 
   .state-line-light {

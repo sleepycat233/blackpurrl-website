@@ -1,30 +1,34 @@
 ---
 import type { Scenario } from '../data/scenarios';
 
-const { scenario }: { scenario: Scenario } = Astro.props;
+const { scenario, variant = 'primary' }: { scenario: Scenario; variant?: 'primary' | 'compact' } = Astro.props;
 ---
 
-<div class="card-dark flex flex-col gap-4">
-  <!-- game_state block -->
-  <div class="state-block">
-    <span class="state-label">game_state</span>
-    <div class="state-line whitespace-pre">
-      {scenario.stateLines.map(line => <div>{line}</div>)}
+{variant === 'primary' ? (
+  <div class="card-dark flex flex-col gap-4">
+    <div class="state-block">
+      <span class="state-label">game_state</span>
+      <div class="state-line whitespace-pre">
+        {scenario.stateLines.map(line => <div>{line}</div>)}
+      </div>
     </div>
-  </div>
 
-  <!-- Q&A block -->
-  <div class="flex flex-col gap-3">
-    <p class="text-sm sm:text-base leading-relaxed">
-      <span class="text-ink-500 font-semibold">You:</span> {scenario.question}
-    </p>
-    <p class="text-sm sm:text-base leading-relaxed">
-      <span class="text-ink-500 font-semibold">BlackPurrl:</span> {scenario.answer}
-    </p>
-  </div>
+    <div class="flex flex-col gap-3">
+      <p class="text-sm sm:text-base leading-relaxed">
+        <span class="text-ink-500 font-semibold">You:</span> {scenario.question}
+      </p>
+      <p class="text-sm sm:text-base leading-relaxed">
+        <span class="text-ink-500 font-semibold">BlackPurrl:</span> {scenario.answer}
+      </p>
+    </div>
 
-  <!-- note -->
-  {scenario.note && (
-    <p class="text-xs text-ink-500 italic">{scenario.note}</p>
-  )}
-</div>
+    {scenario.note && (
+      <p class="text-xs text-ink-500 italic">{scenario.note}</p>
+    )}
+  </div>
+) : (
+  <div class="border border-ink-800 rounded-lg p-4 sm:p-5 transition duration-200 hover:border-ink-500">
+    <h4 class="text-sm font-semibold text-white">{scenario.title}</h4>
+    <p class="mt-1 text-xs text-ink-400">{scenario.note}</p>
+  </div>
+)}
