@@ -1,60 +1,283 @@
 ---
 import { scenarios } from '../data/scenarios';
-import HeroScenarioCard from '../components/HeroScenarioCard.astro';
 ---
 
-<section class="px-6 py-24 sm:py-28 bg-black text-white">
-  <div class="max-w-6xl mx-auto lg:flex lg:items-center lg:gap-16">
-    <div class="lg:w-1/2 lg:text-left text-center">
+<section class="px-6 pt-8 pb-20 sm:pt-10 sm:pb-24 bg-black text-white">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- brand mark, top-left -->
+    <a href="/" class="inline-flex items-center gap-3 mb-12 sm:mb-16">
       <img
         src="/brand/blackpurrl-logo-mark-v1.png"
         alt="BlackPurrl"
-        class="w-16 h-16 sm:w-20 sm:h-20 mb-6 mx-auto lg:mx-0"
-        width="80"
-        height="80"
-        loading="eager"
+        class="w-12 h-12 sm:w-14 sm:h-14"
+        width="56" height="56" loading="eager"
       />
-      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight max-w-4xl text-balance">
-        Your companion through every quest, every world, every moment.
+      <span class="text-lg sm:text-xl font-semibold tracking-tight">BlackPurrl</span>
+    </a>
+
+    <div class="lg:flex lg:items-center lg:gap-12">
+
+    <!-- left column -->
+    <div class="lg:w-2/5 lg:text-left text-center flex flex-col">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight">
+        <span class="text-white">Your companion through</span><br>
+        <!-- rotating lines -->
+        <button data-tab="0" class="hero-tab block w-full lg:text-left text-center mt-1 cursor-pointer bg-transparent border-0 p-0">
+          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every quest,</span>
+        </button>
+        <button data-tab="1" class="hero-tab block w-full lg:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every world,</span>
+        </button>
+        <button data-tab="2" class="hero-tab block w-full lg:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every moment.</span>
+        </button>
       </h1>
+
       <p class="mt-6 text-base sm:text-lg text-ink-200 max-w-2xl text-pretty leading-relaxed">
         BlackPurrl is your AI companion for the games you play. Ask anything — it answers from where you are, right now.
       </p>
-      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-        <a href="#" class="btn-primary-dark">
-          Star &amp; Contribute on GitHub
-        </a>
-        <a href="#" class="btn-secondary-dark">
-          Join our Discord
-        </a>
+    </div>
+
+    <!-- right column: real-time voice-interaction "promo clip" -->
+    <div class="mt-16 sm:mt-20 lg:mt-0 lg:w-3/5">
+      <div class="hero-clip-frame">
+        <!-- A. scene layer: clean 16:9 game picture (avatar/voice/mute only) -->
+        <div class="hero-clip-stage">
+          {scenarios.map((scenario, i) => (
+            <div
+              data-panel={i}
+              class="hero-clip-scene"
+              style={`--scene-hue: ${250 - i * 40}deg; ${i === 0 ? 'opacity: 1;' : 'opacity: 0; pointer-events: none;'}`}
+            >
+              <!-- scene background — swap this single element for <img>/<video> later -->
+              <div class="hero-clip-bg" data-bg aria-hidden="true"></div>
+              <div class="hero-clip-scrim" aria-hidden="true"></div>
+
+              <!-- game_state chip -->
+              <div class="hero-clip-state state-block">
+                <span class="state-label">game_state</span>
+                <div class="state-line whitespace-pre leading-relaxed">{scenario.stateLines.map(line => <div>{line}</div>)}</div>
+              </div>
+
+              <!-- in-game story subtitle (game's own caption) lives over the picture -->
+              <div class="hero-clip-story" data-story data-story-text={scenario.storyLine}></div>
+
+              <!-- virtual avatar (placeholder mascot) + voice bars + mute -->
+              <div class="hero-clip-avatar">
+                <div class="voice-bars" data-bars aria-hidden="true">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <img src="/brand/white-cat-mascot.png" alt="" width="112" height="112" loading="eager" />
+              </div>
+              <button
+                type="button"
+                class="hero-clip-mute"
+                data-mute
+                data-audio={`/audio/${scenario.id}.mp3`}
+                aria-label="Audio muted — voice playback coming soon"
+                title="Voice playback coming soon"
+              >🔊</button>
+            </div>
+          ))}
+        </div>
+
+        <!-- B. dialogue track: all spoken subtitles, BELOW the picture -->
+        <div class="hero-clip-track">
+          {scenarios.map((scenario, i) => (
+            <div
+              data-track={i}
+              data-question={scenario.question}
+              data-toolcall={scenario.toolCall}
+              data-answer={scenario.answer}
+              class="hero-clip-lines"
+              style={i === 0 ? 'opacity: 1;' : 'opacity: 0; pointer-events: none;'}
+            >
+              <p class="clip-line clip-line-you" data-you-line>
+                <span class="clip-speaker">You</span>
+                <span class="clip-text" data-you></span>
+              </p>
+              <p class="clip-line clip-line-tool" data-tool-line>
+                <span class="clip-speaker clip-speaker-tool">tool call</span>
+                <span class="clip-text clip-text-tool" data-tool></span>
+              </p>
+              <p class="clip-line clip-line-ai" data-ai-line>
+                <span class="clip-speaker clip-speaker-ai">BlackPurrl</span>
+                <span class="clip-text" data-ai></span>
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
 
-    <!-- visual hammer — mascot + scenario cards -->
-    <div class="mt-16 sm:mt-20 lg:mt-0 lg:w-1/2">
-      <div class="flex gap-6 mb-8 justify-center items-end">
-        <img
-          src="/brand/black-cat-mascot.png"
-          alt="Black cat mascot"
-          class="h-32 sm:h-56 object-contain"
-          width="auto"
-          height="224"
-          loading="eager"
-        />
-        <img
-          src="/brand/white-cat-mascot.png"
-          alt="White cat mascot"
-          class="h-32 sm:h-56 object-contain"
-          width="auto"
-          height="224"
-          loading="eager"
-        />
-      </div>
-      <div class="grid gap-4 sm:gap-6 grid-cols-1">
-        <HeroScenarioCard scenario={scenarios[0]} variant="primary" />
-        <HeroScenarioCard scenario={scenarios[1]} variant="compact" />
-        <HeroScenarioCard scenario={scenarios[2]} variant="compact" />
-      </div>
     </div>
   </div>
 </section>
+
+<script>
+  const DURATION = 6000;
+
+  const tabs = Array.from(document.querySelectorAll<HTMLElement>('.hero-tab'));
+  const scenes = Array.from(document.querySelectorAll<HTMLElement>('.hero-clip-scene'));
+  const tracks = Array.from(document.querySelectorAll<HTMLElement>('.hero-clip-lines'));
+  const spans = Array.from(document.querySelectorAll<HTMLElement>('.hero-tab-text'));
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let current = 0;
+  let timer: ReturnType<typeof setInterval> | null = null;
+  let rafId: number | null = null;
+  let startTime: number | null = null;
+  let captionTimers: ReturnType<typeof setTimeout>[] = [];
+
+  // ── left column: text-fill rotation (unchanged behaviour) ──────────
+  function resetSpan(span: HTMLElement) {
+    span.style.backgroundPosition = '100% 0';
+  }
+
+  function activateTab(index: number) {
+    scenes.forEach((scene, i) => {
+      scene.style.opacity = i === index ? '1' : '0';
+      scene.style.pointerEvents = i === index ? 'auto' : 'none';
+    });
+    tracks.forEach((track, i) => {
+      track.style.opacity = i === index ? '1' : '0';
+      track.style.pointerEvents = i === index ? 'auto' : 'none';
+    });
+    spans.forEach((span, i) => {
+      if (i !== index) resetSpan(span);
+    });
+  }
+
+  function animateFill(spanIndex: number) {
+    if (rafId) cancelAnimationFrame(rafId);
+    startTime = null;
+    const span = spans[spanIndex];
+    if (reduceMotion) {
+      span.style.backgroundPosition = '0% 0'; // jump to final (fully violet)
+      return;
+    }
+    span.style.backgroundPosition = '100% 0';
+    function step(ts: number) {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      const pct = Math.max(100 - (elapsed / DURATION) * 100, 0);
+      span.style.backgroundPosition = `${pct}% 0`;
+      if (pct > 0) rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  // ── right column: voice-clip turn-taking + typewriter captions ─────
+  function clearCaptionTimers() {
+    captionTimers.forEach(clearTimeout);
+    captionTimers = [];
+  }
+
+  function typewriter(el: HTMLElement, text: string, perChar: number, onDone?: () => void) {
+    if (reduceMotion) {
+      el.textContent = text;
+      onDone?.();
+      return;
+    }
+    let i = 0;
+    function tick() {
+      el.textContent = text.slice(0, i);
+      if (i < text.length) {
+        i += 1;
+        captionTimers.push(setTimeout(tick, perChar));
+      } else {
+        onDone?.();
+      }
+    }
+    tick();
+  }
+
+  function playClip(index: number) {
+    clearCaptionTimers();
+    const scene = scenes[index];
+    const track = tracks[index];
+    const story = scene.querySelector<HTMLElement>('[data-story]');
+    const youText = track.querySelector<HTMLElement>('[data-you]');
+    const toolText = track.querySelector<HTMLElement>('[data-tool]');
+    const aiText = track.querySelector<HTMLElement>('[data-ai]');
+    if (!youText || !toolText || !aiText) return;
+
+    const question = track.dataset.question ?? '';
+    const toolCall = track.dataset.toolcall ?? '';
+    const answer = track.dataset.answer ?? '';
+
+    // reset all scenes' speaking + story, and every track's lines
+    scenes.forEach((s) => {
+      s.classList.remove('is-speaking');
+      const st = s.querySelector<HTMLElement>('[data-story]');
+      if (st) st.textContent = '';
+    });
+    tracks.forEach((t) => {
+      t.classList.remove('you-active', 'tool-active', 'ai-active', 'is-typing');
+      t.querySelectorAll<HTMLElement>('[data-you], [data-tool], [data-ai]').forEach((el) => (el.textContent = ''));
+    });
+
+    // 0ms — in-game story subtitle + the player's question (both instant)
+    if (story) story.textContent = story.dataset.storyText ?? '';
+    track.classList.add('you-active');
+    youText.textContent = question;
+
+    // ~1000ms — tool call beat (AI is querying)
+    const TOOL_AT = 1000;
+    const SPEAK_AT = 2000;
+    const TYPE_BUDGET = 3200; // finish typing before the 6s mark
+    captionTimers.push(setTimeout(() => {
+      track.classList.add('tool-active');
+      toolText.textContent = toolCall;
+    }, TOOL_AT));
+
+    // ~2000ms — BlackPurrl speaks: voice bars on, typewriter the answer
+    captionTimers.push(setTimeout(() => {
+      track.classList.add('ai-active', 'is-typing');
+      scene.classList.add('is-speaking');
+      const perChar = Math.min(TYPE_BUDGET / Math.max(answer.length, 1), 30);
+      typewriter(aiText, answer, perChar, () => {
+        track.classList.remove('is-typing');
+        scene.classList.remove('is-speaking');
+      });
+    }, SPEAK_AT));
+  }
+
+  // ── shared rotation clock (single source of truth) ─────────────────
+  function goTo(index: number, resetTimer = true) {
+    current = index;
+    activateTab(index);
+    animateFill(index);
+    playClip(index);
+    if (resetTimer) {
+      if (timer) clearInterval(timer);
+      timer = setInterval(advance, DURATION);
+    }
+  }
+
+  function advance() {
+    goTo((current + 1) % tabs.length, false);
+    if (timer) clearInterval(timer);
+    timer = setInterval(advance, DURATION);
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => goTo(i));
+  });
+
+  // mute toggle stub — no audio wired yet
+  document.querySelectorAll<HTMLButtonElement>('[data-mute]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const muted = btn.dataset.muted !== 'false';
+      btn.dataset.muted = muted ? 'false' : 'true';
+      btn.textContent = muted ? '🔈' : '🔊';
+      btn.setAttribute('aria-label', muted ? 'Audio on (demo coming soon)' : 'Audio muted');
+      // future: new Audio(btn.dataset.audio ?? '').play();
+    });
+  });
+
+  // kick off
+  goTo(0);
+</script>

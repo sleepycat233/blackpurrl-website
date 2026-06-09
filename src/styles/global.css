@@ -88,6 +88,158 @@
   .glyph-light {
     @apply w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center text-sm font-mono;
   }
+
+  /* ── Hero right-column "promo clip": picture + dialogue track ────── */
+
+  /* outer frame: 16:9 picture on top, dialogue track below */
+  .hero-clip-frame {
+    @apply w-full;
+  }
+
+  /* A. scene stage — clean 16:9 game picture */
+  .hero-clip-stage {
+    @apply relative w-full overflow-hidden rounded-xl border border-ink-800;
+    aspect-ratio: 16 / 9;
+  }
+
+  .hero-clip-scene {
+    @apply absolute inset-0 transition-opacity duration-500;
+  }
+
+  /* swappable scene background — single layer, no children.
+     Future: set --scene-img and uncomment background-image, or
+     replace this <div> with <video class="hero-clip-bg" …>. */
+  .hero-clip-bg {
+    @apply absolute inset-0;
+    --scene-hue: 250deg;
+    background:
+      radial-gradient(120% 80% at 72% 18%, hsl(var(--scene-hue) 70% 60% / 0.18), transparent 60%),
+      radial-gradient(90% 70% at 20% 90%, hsl(var(--scene-hue) 50% 40% / 0.12), transparent 55%),
+      linear-gradient(160deg, #0f1520 0%, #070b12 72%);
+    /* background-image: var(--scene-img); background-size: cover; background-position: center; */
+  }
+
+  .hero-clip-scrim {
+    @apply absolute inset-0;
+    background: linear-gradient(to top, rgba(7, 11, 18, 0.7) 0%, rgba(7, 11, 18, 0.05) 38%, transparent 64%);
+  }
+
+  /* game_state chip, top-left — reuses .state-block look */
+  .hero-clip-state {
+    @apply absolute top-3 left-3 right-3 sm:right-auto sm:max-w-[58%] backdrop-blur-sm;
+    background: rgba(15, 21, 32, 0.72);
+  }
+
+  /* in-game story subtitle — the game's own caption, over the picture */
+  .hero-clip-story {
+    @apply absolute left-3 right-3 bottom-3 text-center text-sm sm:text-base text-white/85 italic;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  }
+  .hero-clip-story:empty { @apply hidden; }
+
+  /* avatar layer — swappable for animated avatar later */
+  .hero-clip-avatar {
+    @apply absolute bottom-4 right-4 sm:bottom-5 sm:right-6 flex flex-col items-center gap-2;
+  }
+  .hero-clip-avatar img {
+    @apply h-24 sm:h-32 w-auto object-contain drop-shadow-lg;
+  }
+
+  /* equalizer voice bars — pure CSS, toggled by .is-speaking on the scene */
+  .voice-bars {
+    @apply flex items-end gap-[3px] h-4 opacity-0 transition-opacity duration-200;
+  }
+  .voice-bars span {
+    @apply w-[3px] rounded-full;
+    height: 30%;
+    background: #a78bfa;
+  }
+  .hero-clip-scene.is-speaking .voice-bars {
+    @apply opacity-100;
+  }
+  .hero-clip-scene.is-speaking .voice-bars span {
+    animation: voiceBar 0.9s ease-in-out infinite;
+  }
+  .hero-clip-scene.is-speaking .voice-bars span:nth-child(2) { animation-delay: 0.12s; }
+  .hero-clip-scene.is-speaking .voice-bars span:nth-child(3) { animation-delay: 0.28s; }
+  .hero-clip-scene.is-speaking .voice-bars span:nth-child(4) { animation-delay: 0.16s; }
+  .hero-clip-scene.is-speaking .voice-bars span:nth-child(5) { animation-delay: 0.34s; }
+
+  /* mute toggle stub — top-right */
+  .hero-clip-mute {
+    @apply absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full text-base
+           border border-ink-700 text-white/90 transition duration-200 hover:bg-ink-900;
+    background: rgba(15, 21, 32, 0.72);
+  }
+
+  /* B. dialogue track — all spoken subtitles, BELOW the picture */
+  .hero-clip-track {
+    @apply relative mt-4 sm:mt-5;
+    min-height: 7rem;
+  }
+  .hero-clip-lines {
+    @apply absolute inset-x-0 top-0 flex flex-col gap-2 transition-opacity duration-500;
+  }
+  .clip-line {
+    @apply flex gap-2.5 text-sm sm:text-base leading-relaxed transition-opacity duration-200;
+  }
+  /* dim the line whose turn isn't active; hide tool line until active */
+  .hero-clip-lines:not(.you-active) .clip-line-you,
+  .hero-clip-lines:not(.ai-active) .clip-line-ai {
+    @apply opacity-30;
+  }
+  .clip-line-tool {
+    @apply opacity-0;
+  }
+  .hero-clip-lines.tool-active .clip-line-tool {
+    @apply opacity-100;
+  }
+  /* once the AI is answering, fade the tool-call beat back down */
+  .hero-clip-lines.ai-active .clip-line-tool {
+    @apply opacity-40;
+  }
+  .clip-speaker {
+    @apply flex-shrink-0 font-semibold text-ink-400 min-w-[5.5rem];
+  }
+  .clip-speaker-ai {
+    @apply text-violet-400;
+  }
+  .clip-speaker-tool {
+    @apply font-mono text-xs uppercase tracking-wider text-ink-500 self-center;
+  }
+  .clip-text-tool {
+    @apply font-mono text-xs sm:text-sm text-ink-400 self-center;
+  }
+  .clip-text {
+    @apply text-white/90;
+  }
+  /* blinking caret while the AI line is being typed */
+  .hero-clip-lines.is-typing .clip-line-ai .clip-text::after {
+    content: '';
+    @apply inline-block w-[2px] h-[1em] align-[-0.1em] ml-0.5 bg-violet-400;
+    animation: caretBlink 0.9s step-end infinite;
+  }
+}
+
+@keyframes voiceBar {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-clip-scene.is-speaking .voice-bars span {
+    animation: none;
+    height: 60%;
+  }
+  .hero-clip-lines.is-typing .clip-line-ai .clip-text::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 @layer utilities {

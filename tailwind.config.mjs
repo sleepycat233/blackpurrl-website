@@ -35,16 +35,18 @@ export default {
           700: '#4f4f4f',
           800: '#454545',
           900: '#3d3d3d',
-          950: '#000000',
+          950: '#070b12',
         },
         canvas: {
-          dark: '#000000',
+          dark: '#070b12',
           light: '#ffffff',
         },
         surface: {
-          dark: '#1a1a1a',
+          dark: '#0f1520',
           light: '#f5f5f5',
         },
+        // override tailwind's black so bg-black picks up the midnight tint
+        black: '#070b12',
       },
       maxWidth: {
         section: '72rem',
