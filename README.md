@@ -1,6 +1,6 @@
 # BlackPurrl Website
 
-Official landing page for [BlackPurrl](https://github.com/sleepycat233/blackpurrl-website) — the AI gaming co-pilot that reads your save, not your screenshots.
+Official landing page for [BlackPurrl](https://github.com/sleepycat233/blackpurrl-website) — your AI companion for the games you play.
 
 ## Quick start
 

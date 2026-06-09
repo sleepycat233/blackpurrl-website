@@ -1,0 +1,30 @@
+---
+import type { Scenario } from '../data/scenarios';
+
+const { scenario }: { scenario: Scenario } = Astro.props;
+---
+
+<div class="card-dark flex flex-col gap-4">
+  <!-- game_state block -->
+  <div class="bg-gray-900 rounded-lg p-3 font-mono text-xs sm:text-sm leading-relaxed">
+    <span class="text-gray-500 text-xs block mb-1">game_state</span>
+    <div class="text-gray-300 whitespace-pre">
+      {scenario.stateLines.map(line => <div>{line}</div>)}
+    </div>
+  </div>
+
+  <!-- Q&A block -->
+  <div class="flex flex-col gap-3">
+    <p class="text-sm sm:text-base leading-relaxed">
+      <span class="text-gray-500 font-semibold">You:</span> {scenario.question}
+    </p>
+    <p class="text-sm sm:text-base leading-relaxed">
+      <span class="text-gray-500 font-semibold">🐈 BlackPurrl:</span> {scenario.answer}
+    </p>
+  </div>
+
+  <!-- note -->
+  {scenario.note && (
+    <p class="text-xs text-gray-500 italic">{scenario.note}</p>
+  )}
+</div>

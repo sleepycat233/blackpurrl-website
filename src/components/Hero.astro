@@ -1,19 +1,36 @@
 ---
+import { scenarios } from '../data/scenarios';
+import HeroScenarioCard from '../components/HeroScenarioCard.astro';
 ---
 
-<section class="flex flex-col items-center justify-center min-h-[90vh] px-6 py-24 text-center bg-black text-white">
+<section class="flex flex-col items-center justify-center px-6 py-24 text-center bg-black text-white">
+  <img
+    src="/brand/blackpurrl-logo-mark-v1.png"
+    alt="BlackPurrl"
+    class="w-16 h-16 sm:w-20 sm:h-20 mb-6"
+    width="80"
+    height="80"
+    loading="eager"
+  />
   <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight max-w-4xl text-balance">
-    The AI gaming co-pilot that reads your save<span class="text-gray-500"> — </span>not your screenshots.
+    Your companion through every quest, every world, every moment.
   </h1>
   <p class="mt-6 text-base sm:text-lg text-gray-400 max-w-2xl text-pretty leading-relaxed">
-    BlackPurrl is a real-time AI tutor for single-player games. Hit a hotkey, ask anything — it answers from your <em class="text-white not-italic font-semibold">current</em> quest, location, and game state, not generic wiki guesses.
+    BlackPurrl is your AI companion for the games you play. Ask anything — it answers from where you are, right now.
   </p>
   <div class="mt-10 flex flex-col sm:flex-row gap-4">
     <a href="#" class="btn-primary-dark">
-      Star on GitHub
+      Star &amp; Contribute on GitHub
     </a>
     <a href="#" class="btn-secondary-dark">
       Join our Discord
     </a>
+  </div>
+
+  <!-- 3 scenario cards -->
+  <div class="mt-16 sm:mt-20 w-full max-w-5xl mx-auto">
+    <div class="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+      {scenarios.map(s => <HeroScenarioCard scenario={s} />)}
+    </div>
   </div>
 </section>
