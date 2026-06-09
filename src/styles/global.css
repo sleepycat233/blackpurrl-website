@@ -14,10 +14,13 @@
     overflow-x: hidden;
   }
 
-  /* Ensure no horizontal scroll on any device */
   img, svg, video {
     max-width: 100%;
     height: auto;
+  }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ink-300 ring-offset-2 ring-offset-canvas-dark;
   }
 }
 
@@ -26,16 +29,20 @@
     @apply text-3xl sm:text-4xl font-bold tracking-tight;
   }
 
+  .section-eyebrow {
+    @apply text-xs sm:text-sm font-semibold tracking-widest uppercase;
+  }
+
   .section-container {
     @apply max-w-6xl mx-auto;
   }
 
   .card-dark {
-    @apply border border-gray-800 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-gray-600;
+    @apply border border-ink-800 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-ink-500;
   }
 
   .card-light {
-    @apply border border-gray-200 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-gray-400 hover:shadow-sm;
+    @apply border border-ink-200 rounded-xl p-6 sm:p-8 transition duration-200 hover:border-ink-400;
   }
 
   .btn-primary {
@@ -43,15 +50,43 @@
   }
 
   .btn-primary-dark {
-    @apply btn-primary bg-white text-black hover:bg-gray-200;
+    @apply btn-primary bg-white text-black hover:bg-ink-200;
   }
 
   .btn-secondary-dark {
-    @apply btn-primary border border-gray-600 text-white hover:bg-gray-900;
+    @apply btn-primary border border-ink-600 text-white hover:bg-ink-900;
   }
 
   .btn-secondary-light {
-    @apply btn-primary border border-gray-400 text-black hover:bg-gray-100;
+    @apply btn-primary border border-ink-400 text-black hover:bg-ink-100;
+  }
+
+  .state-block {
+    @apply bg-surface-dark border border-ink-800 rounded-lg p-3 font-mono text-xs sm:text-sm leading-relaxed;
+  }
+
+  .state-block-light {
+    @apply bg-surface-light border border-ink-200 rounded-lg p-3 font-mono text-xs sm:text-sm leading-relaxed;
+  }
+
+  .state-label {
+    @apply text-ink-500 text-xs block mb-1;
+  }
+
+  .state-line {
+    @apply text-ink-300;
+  }
+
+  .state-line-light {
+    @apply text-ink-600;
+  }
+
+  .glyph-dark {
+    @apply w-10 h-10 rounded-lg border border-ink-700 text-ink-300 flex items-center justify-center text-sm font-mono;
+  }
+
+  .glyph-light {
+    @apply w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center text-sm font-mono;
   }
 }
 
