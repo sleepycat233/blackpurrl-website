@@ -1,7 +1,9 @@
 ---
+import { scenarios } from '../data/scenarios';
+import HeroScenarioCard from '../components/HeroScenarioCard.astro';
 ---
 
-<section class="flex flex-col items-center justify-center min-h-[90vh] px-6 py-24 text-center bg-black text-white">
+<section class="flex flex-col items-center justify-center px-6 py-24 text-center bg-black text-white">
   <img
     src="/brand/blackpurrl-logo-mark-v1.png"
     alt="BlackPurrl"
@@ -23,5 +25,12 @@
     <a href="#" class="btn-secondary-dark">
       Join our Discord
     </a>
+  </div>
+
+  <!-- 3 scenario cards -->
+  <div class="mt-16 sm:mt-20 w-full max-w-5xl mx-auto">
+    <div class="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+      {scenarios.map(s => <HeroScenarioCard scenario={s} />)}
+    </div>
   </div>
 </section>
