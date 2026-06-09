@@ -3,34 +3,58 @@ import { scenarios } from '../data/scenarios';
 import HeroScenarioCard from '../components/HeroScenarioCard.astro';
 ---
 
-<section class="flex flex-col items-center justify-center px-6 py-24 text-center bg-black text-white">
-  <img
-    src="/brand/blackpurrl-logo-mark-v1.png"
-    alt="BlackPurrl"
-    class="w-16 h-16 sm:w-20 sm:h-20 mb-6"
-    width="80"
-    height="80"
-    loading="eager"
-  />
-  <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight max-w-4xl text-balance">
-    Your companion through every quest, every world, every moment.
-  </h1>
-  <p class="mt-6 text-base sm:text-lg text-gray-400 max-w-2xl text-pretty leading-relaxed">
-    BlackPurrl is your AI companion for the games you play. Ask anything — it answers from where you are, right now.
-  </p>
-  <div class="mt-10 flex flex-col sm:flex-row gap-4">
-    <a href="#" class="btn-primary-dark">
-      Star &amp; Contribute on GitHub
-    </a>
-    <a href="#" class="btn-secondary-dark">
-      Join our Discord
-    </a>
-  </div>
+<section class="px-6 py-24 sm:py-28 bg-black text-white">
+  <div class="max-w-6xl mx-auto lg:flex lg:items-center lg:gap-16">
+    <div class="lg:w-1/2 lg:text-left text-center">
+      <img
+        src="/brand/blackpurrl-logo-mark-v1.png"
+        alt="BlackPurrl"
+        class="w-16 h-16 sm:w-20 sm:h-20 mb-6 mx-auto lg:mx-0"
+        width="80"
+        height="80"
+        loading="eager"
+      />
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-tight max-w-4xl text-balance">
+        Your companion through every quest, every world, every moment.
+      </h1>
+      <p class="mt-6 text-base sm:text-lg text-ink-200 max-w-2xl text-pretty leading-relaxed">
+        BlackPurrl is your AI companion for the games you play. Ask anything — it answers from where you are, right now.
+      </p>
+      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+        <a href="#" class="btn-primary-dark">
+          Star &amp; Contribute on GitHub
+        </a>
+        <a href="#" class="btn-secondary-dark">
+          Join our Discord
+        </a>
+      </div>
+    </div>
 
-  <!-- 3 scenario cards -->
-  <div class="mt-16 sm:mt-20 w-full max-w-5xl mx-auto">
-    <div class="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
-      {scenarios.map(s => <HeroScenarioCard scenario={s} />)}
+    <!-- visual hammer — mascot + scenario cards -->
+    <div class="mt-16 sm:mt-20 lg:mt-0 lg:w-1/2">
+      <div class="flex gap-6 mb-8 justify-center items-end">
+        <img
+          src="/brand/black-cat-mascot.png"
+          alt="Black cat mascot"
+          class="h-32 sm:h-56 object-contain"
+          width="auto"
+          height="224"
+          loading="eager"
+        />
+        <img
+          src="/brand/white-cat-mascot.png"
+          alt="White cat mascot"
+          class="h-32 sm:h-56 object-contain"
+          width="auto"
+          height="224"
+          loading="eager"
+        />
+      </div>
+      <div class="grid gap-4 sm:gap-6 grid-cols-1">
+        <HeroScenarioCard scenario={scenarios[0]} variant="primary" />
+        <HeroScenarioCard scenario={scenarios[1]} variant="compact" />
+        <HeroScenarioCard scenario={scenarios[2]} variant="compact" />
+      </div>
     </div>
   </div>
 </section>

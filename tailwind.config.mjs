@@ -37,6 +37,14 @@ export default {
           900: '#3d3d3d',
           950: '#000000',
         },
+        canvas: {
+          dark: '#000000',
+          light: '#ffffff',
+        },
+        surface: {
+          dark: '#1a1a1a',
+          light: '#f5f5f5',
+        },
       },
       maxWidth: {
         section: '72rem',
