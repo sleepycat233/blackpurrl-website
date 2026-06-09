@@ -152,7 +152,15 @@
     @apply absolute bottom-4 right-4 sm:bottom-5 sm:right-6 flex flex-col items-center gap-2;
   }
   .hero-clip-avatar img {
-    @apply h-24 sm:h-32 w-auto object-contain drop-shadow-lg;
+    @apply h-32 sm:h-44 w-auto object-contain;
+    /* permanent violet halo — always visible, no speaking required */
+    filter: drop-shadow(0 0 12px hsl(255 90% 75% / 0.5));
+    transition: filter 0.4s;
+  }
+  /* the companion comes alive while speaking — bigger bounce + brighter halo */
+  .hero-clip-scene.is-speaking .hero-clip-avatar img {
+    animation: mascotSpeak 0.9s ease-in-out infinite;
+    filter: drop-shadow(0 0 22px hsl(255 90% 75% / 0.85));
   }
 
   /* equalizer voice bars — pure CSS, toggled by .is-speaking on the scene */
@@ -261,8 +269,11 @@
     height: 40%;
     animation: voiceBar 0.9s ease-in-out infinite;
   }
-  .clip-voice-bars span:nth-child(2) { animation-delay: 0.15s; }
-  .clip-voice-bars span:nth-child(3) { animation-delay: 0.3s; }
+  .clip-voice-bars span:nth-child(2) { animation-delay: 0.12s; }
+  .clip-voice-bars span:nth-child(3) { animation-delay: 0.28s; }
+  .clip-voice-bars span:nth-child(4) { animation-delay: 0.06s; }
+  .clip-voice-bars span:nth-child(5) { animation-delay: 0.22s; }
+  .clip-voice-bars span:nth-child(6) { animation-delay: 0.38s; }
   .hero-clip-lines:not(.is-typing) .clip-voice-bars span {
     animation: none;
     height: 40%;
@@ -284,6 +295,12 @@
   .clip-text {
     @apply text-white/90;
   }
+  /* dialogue payload — You question + final voice answer share one size,
+     larger than the meta tags (thinking / state) between them */
+  .clip-line-you .clip-text,
+  .clip-bp-voice .clip-text {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
   /* blinking caret while typing */
   .hero-clip-lines.is-typing .clip-bp-voice .clip-text::after {
     content: '';
@@ -302,6 +319,11 @@
   50% { opacity: 0; }
 }
 
+@keyframes mascotSpeak {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-7px) scale(1.08); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-clip-scene.is-speaking .voice-bars span {
     animation: none;
@@ -311,6 +333,11 @@
     animation: none;
     opacity: 0;
   }
+  .hero-clip-scene.is-speaking .hero-clip-avatar img {
+    animation: none; /* keep the static halo, drop the bounce */
+  }
+  .hero-dial-track { transition: none; }
+  .hero-tab { transition: none; }
   .reveal {
     opacity: 1 !important;
     transform: none !important;
@@ -329,10 +356,60 @@
   transform: none;
 }
 
-/* narrow screens (<768px): only show the active hero tab line */
+/* ── Hero rotating lines: slot-machine dial (narrow) / relay (wide) ── */
+.hero-tab-text {
+  /* smooth hand-off of the progress wipe when the active line changes */
+  transition: background-position 0.4s ease;
+}
+
+/* narrow screens (<768px): slot-machine dial — one line in view, rolls */
 @media (max-width: 767px) {
-  .hero-tab { display: none; }
-  .hero-tab.is-active { display: block; }
+  /* clip-path instead of overflow:hidden — overflow:hidden breaks -webkit-background-clip:text */
+  .hero-dial {
+    display: block;
+    height: 1.4em;
+    line-height: 1.4;
+    margin-bottom: 0.25rem;
+    /* clip to one line's height; small top margin so ascenders don't clip */
+    clip-path: inset(0 0 0 0);
+    overflow: visible;
+  }
+  .hero-dial-track {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.5, 1); /* overshoot click */
+  }
+  .hero-tab { display: block; height: 1.4em; transition: opacity 0.3s, filter 0.3s; }
+  /* exiting/idle lines: dimmed + blurred to sell the dial "click into place" */
+  .hero-tab:not(.is-active) { opacity: 0.35; filter: blur(2px); }
+  .hero-tab.is-active { opacity: 1; filter: none; }
+}
+
+/* wide screens (≥768px): all three stacked — relay indicator */
+@media (min-width: 768px) {
+  .hero-dial { overflow: visible; height: auto; }
+  .hero-dial-track { transform: none !important; }
+  .hero-tab {
+    /* rail via ::before so text stays flush with "Your companion through" above */
+    position: relative;
+    padding-left: 0;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .hero-tab::before {
+    content: '';
+    position: absolute;
+    left: -0.75rem;
+    top: 0.1em;
+    bottom: 0.1em;
+    width: 2px;
+    background: theme('colors.ink.700');
+    border-radius: 1px;
+    transition: background 0.35s ease;
+  }
+  /* de-weight idle lines, focus the active one */
+  .hero-tab:not(.is-active) { opacity: 0.4; transform: scale(0.97); transform-origin: left center; }
+  .hero-tab.is-active { opacity: 1; transform: scale(1); }
+  .hero-tab.is-active::before { background: #a78bfa; }
 }
 
 @layer utilities {

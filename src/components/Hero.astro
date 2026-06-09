@@ -11,16 +11,20 @@ import { scenarios } from '../data/scenarios';
     <div class="md:w-2/5 md:text-left text-center flex flex-col">
       <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight">
         <span class="text-white">Your companion through</span><br>
-        <!-- rotating lines -->
-        <button data-tab="0" class="hero-tab block w-full md:text-left text-center mt-1 cursor-pointer bg-transparent border-0 p-0">
-          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every quest,</span>
-        </button>
-        <button data-tab="1" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
-          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every world,</span>
-        </button>
-        <button data-tab="2" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
-          <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every moment.</span>
-        </button>
+        <!-- rotating lines: narrow = slot-machine dial, wide = stacked relay -->
+        <span class="hero-dial mt-1 md:block md:text-left">
+          <span class="hero-dial-track" data-dial-track>
+            <button data-tab="0" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+              <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every quest,</span>
+            </button>
+            <button data-tab="1" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+              <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every world,</span>
+            </button>
+            <button data-tab="2" class="hero-tab block w-full md:text-left text-center cursor-pointer bg-transparent border-0 p-0">
+              <span class="hero-tab-text" style="background-image: linear-gradient(to right, #a78bfa 50%, #4b5563 50%); background-size: 200% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;">every moment.</span>
+            </button>
+          </span>
+        </span>
       </h1>
 
       <p class="mt-6 text-base sm:text-lg text-ink-200 max-w-2xl text-pretty leading-relaxed hidden md:block">
@@ -99,7 +103,7 @@ import { scenarios } from '../data/scenarios';
                   </span>
                   <span class="clip-bp-voice" data-ai>
                     <span class="clip-bp-tag clip-voice-bars-wrap" aria-hidden="true">
-                      <span class="clip-voice-bars"><span></span><span></span><span></span></span>
+                      <span class="clip-voice-bars"><span></span><span></span><span></span><span></span><span></span><span></span></span>
                     </span>
                     <span class="clip-text" data-ai-text></span>
                   </span>
@@ -127,17 +131,23 @@ import { scenarios } from '../data/scenarios';
   const scenes = Array.from(document.querySelectorAll<HTMLElement>('.hero-clip-scene'));
   const tracks = Array.from(document.querySelectorAll<HTMLElement>('.hero-clip-lines'));
   const spans = Array.from(document.querySelectorAll<HTMLElement>('.hero-tab-text'));
+  const dialTrack = document.querySelector<HTMLElement>('[data-dial-track]');
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const narrowQuery = window.matchMedia('(max-width: 767px)');
+  const DIAL_ROLL_MS = 300; // matches .hero-dial-track transition
 
   let current = 0;
   let timer: ReturnType<typeof setInterval> | null = null;
   let rafId: number | null = null;
   let startTime: number | null = null;
   let captionTimers: ReturnType<typeof setTimeout>[] = [];
+  let fillTimer: ReturnType<typeof setTimeout> | null = null;
 
   // ── left column: text-fill rotation (unchanged behaviour) ──────────
   function resetSpan(span: HTMLElement) {
+    // keep CSS transition on → previous line's fill fades back smoothly (hand-off)
+    span.style.transition = '';
     span.style.backgroundPosition = '100% 0';
   }
 
@@ -155,7 +165,7 @@ import { scenarios } from '../data/scenarios';
     tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
   }
 
-  function animateFill(spanIndex: number) {
+  function animateFill(spanIndex: number, duration: number) {
     if (rafId) cancelAnimationFrame(rafId);
     startTime = null;
     const span = spans[spanIndex];
@@ -163,11 +173,14 @@ import { scenarios } from '../data/scenarios';
       span.style.backgroundPosition = '0% 0'; // jump to final (fully violet)
       return;
     }
+    // RAF drives background-position per frame → disable CSS transition so it
+    // isn't smeared; resetSpan() re-enables it for the smooth hand-off.
+    span.style.transition = 'none';
     span.style.backgroundPosition = '100% 0';
     function step(ts: number) {
       if (!startTime) startTime = ts;
       const elapsed = ts - startTime;
-      const pct = Math.max(100 - (elapsed / DURATION) * 100, 0);
+      const pct = Math.max(100 - (elapsed / duration) * 100, 0);
       span.style.backgroundPosition = `${pct}% 0`;
       if (pct > 0) rafId = requestAnimationFrame(step);
     }
@@ -178,6 +191,7 @@ import { scenarios } from '../data/scenarios';
   function clearCaptionTimers() {
     captionTimers.forEach(clearTimeout);
     captionTimers = [];
+    if (fillTimer) { clearTimeout(fillTimer); fillTimer = null; }
   }
 
   function typewriter(el: HTMLElement, text: string, perWord: number, onDone?: () => void) {
@@ -281,8 +295,25 @@ import { scenarios } from '../data/scenarios';
     current = index;
     if (timer) { clearInterval(timer); clearTimeout(timer as unknown as ReturnType<typeof setTimeout>); }
     activateTab(index);
-    animateFill(index);
+    // narrow screens: roll the slot-machine dial to this line
+    if (dialTrack) {
+      dialTrack.style.transform = `translateY(calc(-${index} * 1.4em))`;
+    }
+    // compute actual cycle duration for this scene's answer length
+    const answer = tracks[index]?.dataset.answer ?? '';
+    const wordCount = answer.split(' ').length;
+    const perWord = Math.min(TYPE_BUDGET_CONST / Math.max(wordCount, 1), 120);
+    const cycleDuration = SPEAK_AT_CONST + (wordCount * perWord) + READ_PAUSE_CONST;
+    // playClip calls clearCaptionTimers internally, so schedule animateFill AFTER it
     playClip(index);
+    // narrow: let the dial roll settle (300ms) before the progress bar wipes.
+    // fillTimer is cleared by clearCaptionTimers so rapid clicks stay clean.
+    if (fillTimer) clearTimeout(fillTimer);
+    if (narrowQuery.matches && !reduceMotion) {
+      fillTimer = setTimeout(() => animateFill(index, cycleDuration), DIAL_ROLL_MS);
+    } else {
+      animateFill(index, cycleDuration);
+    }
   }
 
   function advance() {
